@@ -68,5 +68,23 @@ def retrieve(query, n_results=N_RESULTS):
     if _collection.count() == 0:
         return []
 
-    # Your implementation here.
-    return []
+    # ChromaDB embeds the query with the same model used at ingestion, so the
+    # query vector lands in the same space as the stored chunks. Results come
+    # back sorted ascending by distance (closest first).
+    results = _collection.query(
+        query_texts=[query],
+        n_results=n_results,
+        include=["documents", "metadatas", "distances"],
+    )
+
+    # query() is built for a batch of queries, so every field is a list-of-lists:
+    # the outer list has one entry per query. We sent one query, so the actual
+    # results live at index [0].
+    documents = results["documents"][0]
+    metadatas = results["metadatas"][0]
+    distances = results["distances"][0]
+
+    return [
+        {"text": doc, "game": meta["game"], "distance": dist}
+        for doc, meta, dist in zip(documents, metadatas, distances)
+    ]

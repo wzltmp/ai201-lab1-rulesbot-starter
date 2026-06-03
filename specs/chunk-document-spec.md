@@ -116,11 +116,27 @@ handle these cases better, at the cost of more implementation complexity.
 **Actual chunk count produced across all 8 rule books:**
 
 ```
-[your answer here]
+149 chunks total. Per game:
+  Catan           18    Pandemic         18
+  Clue            21    Risk             20
+  Codenames       16    Ticket to Ride   16
+  Monopoly        23    Uno              17
+
+(Total source text ≈ 36,500 characters across the 8 files.)
 ```
 
 **One thing that surprised you or didn't match your expectations:**
 
 ```
-[your answer here]
+How much the 50-char overlap inflates the chunk count. At 300 chars with no
+overlap, ~36,500 characters would yield only ~122 chunks; the overlap drops the
+effective stride to 250 chars, pushing the real total to 149 — about 20% more
+chunks (and 20% more vectors to store/search) than a naive size estimate
+suggests.
+
+The second surprise: chunk count tracks file *length*, not rule *complexity*.
+Monopoly has the most chunks (23) simply because its file is the longest, not
+because its rules are the hardest — and the min-length=50 filter almost never
+fires, since the only sub-50-char segment is the short tail at the very end of
+each document.
 ```
